@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#1D3F91">
+    <link rel="icon" href="/favicon.png">
+    <title>Admin dashboard | Christ Ambassadors Fellowship International</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script defer src="../js/supabase.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js"></script>
+    <script defer src="admin.js"></script>
+  </head>
+  <body>
+    <div id="admin-app" class="admin-app" hidden>
+      <header class="admin-topbar">
+        <div>
+          <p class="admin-eyebrow">Christ Ambassadors Fellowship International</p>
+          <h1>Church dashboard</h1>
+        </div>
+        <div class="admin-top-actions">
+          <a class="admin-button admin-button-secondary" href="../index.html">View website</a>
+          <button class="admin-button admin-button-secondary" id="logout-button" type="button">Log out</button>
+        </div>
+      </header>
+      <main class="admin-main">
+        <p class="admin-status" id="dashboard-status" role="status" aria-live="polite"></p>
+        <nav class="admin-tabs" id="admin-tabs" aria-label="Dashboard sections"></nav>
+        <div id="admin-panels"></div>
+      </main>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Watch videos and live streams from Christ Ambassadors Fellowship International on Facebook.">
+    <meta name="theme-color" content="#1D3F91">
+    <meta property="og:title" content="Videos | Christ Ambassadors Fellowship International">
+    <meta property="og:description" content="Watch church videos and join our live stream on Facebook.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="/images/logo.png">
+    <link rel="icon" href="/favicon.png">
+    <title>Videos | Christ Ambassadors Fellowship International</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script defer src="js/supabase.js"></script>
+    <script defer src="js/components.js"></script>
+    <script defer src="js/videos.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div id="site-header"></div>
+    <main id="main-content" class="site-main interior-page videos-page">
+      <header class="page-intro">
+        <p class="eyebrow">Watch and worship with us</p>
+        <h1>Church videos</h1>
+        <p>Watch our messages and services on Facebook. Videos open on Facebook to keep this site light and easy to use.</p>
+      </header>
+      <section class="live-stream-card" aria-labelledby="live-stream-title">
+        <div>
+          <p class="eyebrow">Join us online</p>
+          <h2 id="live-stream-title">Watch our live stream on Facebook</h2>
+          <p>Visit our Facebook page to watch live services and recent broadcasts.</p>
+        </div>
+        <a class="button button-primary" href="https://www.facebook.com/profile.php?id=61567079602481" target="_blank" rel="noopener noreferrer">Watch live on Facebook</a>
+      </section>
+      <p class="data-status" id="videoStatus" role="status" aria-live="polite"></p>
+      <section class="video-grid" id="videoGrid" aria-label="Church videos">
+        <p class="loading-message">Loading videos…</p>
+      </section>
+      <div class="list-actions">
+        <button class="button button-secondary hidden" id="loadMoreVideos" type="button">Load more videos</button>
+      </div>
+    </main>
+    <div id="site-footer"></div>
+  </body>
+</html>

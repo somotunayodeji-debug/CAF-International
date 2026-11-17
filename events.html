@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Upcoming events and regular weekly services at Christ Ambassadors Fellowship International in Sagamu.">
+    <meta name="theme-color" content="#1D3F91">
+    <meta property="og:title" content="Events | Christ Ambassadors Fellowship International">
+    <meta property="og:description" content="Find upcoming gatherings and regular weekly services at our church.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="/images/logo.png">
+    <link rel="icon" href="/favicon.png">
+    <title>Events | Christ Ambassadors Fellowship International</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script defer src="js/supabase.js"></script>
+    <script defer src="js/components.js"></script>
+    <script defer src="js/phase4.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div id="site-header"></div>
+    <main id="main-content" class="site-main interior-page">
+      <header class="page-intro">
+        <p class="eyebrow">Life together</p>
+        <h1>Events</h1>
+        <p>Join us for special gatherings and regular weekly services.</p>
+      </header>
+      <section aria-labelledby="events-title">
+        <h2 id="events-title" class="section-title">Upcoming events</h2>
+        <div class="content-grid" id="events-list" aria-live="polite">
+          <p class="loading-message">Loading upcoming events…</p>
+        </div>
+        <div class="list-actions">
+          <button class="button button-secondary hidden" id="load-more-events" type="button">Load more events</button>
+        </div>
+      </section>
+      <section class="weekly-services-section" aria-labelledby="weekly-services-title">
+        <h2 id="weekly-services-title" class="section-title">Regular weekly services</h2>
+        <div class="service-list" id="weekly-services-list" aria-live="polite">
+          <p class="loading-message">Loading service times…</p>
+        </div>
+      </section>
+    </main>
+    <div id="site-footer"></div>
+  </body>
+</html>

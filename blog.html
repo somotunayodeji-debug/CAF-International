@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Read news, reflections, and updates from Christ Ambassadors Fellowship International.">
+    <meta name="theme-color" content="#1D3F91">
+    <meta property="og:title" content="Blog | Christ Ambassadors Fellowship International">
+    <meta property="og:description" content="News, reflections, and updates from our church community.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="/images/logo.png">
+    <link rel="icon" href="/favicon.png">
+    <title>Blog | Christ Ambassadors Fellowship International</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script defer src="js/supabase.js"></script>
+    <script defer src="js/components.js"></script>
+    <script defer src="js/phase4.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div id="site-header"></div>
+    <main id="main-content" class="site-main interior-page">
+      <header class="page-intro">
+        <p class="eyebrow">Stories and reflections</p>
+        <h1>Church blog</h1>
+        <p>Read the latest news and encouragement from our fellowship.</p>
+      </header>
+      <section aria-label="Published articles">
+        <div class="content-grid" id="blog-list" aria-live="polite">
+          <p class="loading-message">Loading articles…</p>
+        </div>
+        <div class="list-actions">
+          <button class="button button-secondary hidden" id="load-more-posts" type="button">Load more articles</button>
+        </div>
+      </section>
+    </main>
+    <div id="site-footer"></div>
+  </body>
+</html>

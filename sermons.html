@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Listen to sermons from Christ Ambassadors Fellowship International in Sagamu, Ogun State.">
+    <meta name="theme-color" content="#1D3F91">
+    <meta property="og:title" content="Sermons | Christ Ambassadors Fellowship International">
+    <meta property="og:description" content="Listen to messages from Christ Ambassadors Fellowship International.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="/images/logo.png">
+    <link rel="icon" href="/favicon.png">
+    <title>Sermons | Christ Ambassadors Fellowship International</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script defer src="js/supabase.js"></script>
+    <script defer src="js/components.js"></script>
+    <script defer src="js/app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div id="site-header"></div>
+    <main id="main-content" class="site-main interior-page sermons-page">
+      <header class="page-intro">
+        <p class="eyebrow">Listen and grow</p>
+        <h1>Sermons</h1>
+        <p>Listen again, share a message, or download it to hear later.</p>
+      </header>
+      <section class="sermon-search-panel" aria-label="Filter sermons">
+        <label class="sermon-search-field">
+          <span>Search sermons</span>
+          <input type="search" id="searchInput" placeholder="Search title, preacher, or series">
+        </label>
+        <label class="sermon-filter-field">
+          <span>Date</span>
+          <input type="date" id="dateFilter">
+        </label>
+        <label class="sermon-filter-field">
+          <span>Preacher</span>
+          <select id="preacherFilter">
+            <option value="">All Preachers</option>
+          </select>
+        </label>
+        <label class="sermon-filter-field">
+          <span>Series</span>
+          <select id="seriesFilter">
+            <option value="">All Series</option>
+          </select>
+        </label>
+        <button id="clearSearch" class="button button-secondary" type="button">Clear filters</button>
+      </section>
+      <p class="data-status" id="sermonStatus" role="status" aria-live="polite"></p>
+      <section class="sermon-grid" id="sermonGrid" aria-label="Sermon list" data-page-size="12">
+        <p class="loading-message">Loading sermons…</p>
+      </section>
+      <div class="list-actions">
+        <button class="button button-secondary hidden" id="loadMoreSermons" type="button">Load more sermons</button>
+      </div>
+      <p class="continue-listening-wrap hidden" id="continueListeningWrap">
+        <button class="button button-primary" id="continueListening" type="button">Continue listening</button>
+      </p>
+    </main>
+    <section id="audioPlayer" class="audio-player" aria-label="Sermon audio player">
+      <div class="player-inner">
+        <img id="playerThumb" class="player-thumb" width="52" height="52" alt="">
+        <div class="player-info">
+          <div id="nowPlaying" class="track-title">No track</div>
+          <div id="nowPreacher" class="track-artist"></div>
+        </div>
+        <div class="player-controls">
+          <button id="playPauseBtn" type="button" aria-label="Play audio" title="Play">▶</button>
+          <div class="progress-wrap">
+            <span id="currentTime">0:00</span>
+            <input type="range" id="progressBar" value="0" min="0" max="100" aria-label="Audio position">
+            <span id="duration">0:00</span>
+          </div>
+        </div>
+        <button id="closePlayer" class="close-btn" type="button" aria-label="Close audio player">×</button>
+      </div>
+      <audio id="audio" preload="none"></audio>
+    </section>
+    <div id="site-footer"></div>
+  </body>
+</html>

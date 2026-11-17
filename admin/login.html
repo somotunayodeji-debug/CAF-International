@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#1D3F91">
+    <link rel="icon" href="/favicon.png">
+    <title>Admin sign in | Christ Ambassadors Fellowship International</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script defer src="../js/supabase.js"></script>
+    <script defer src="admin.js"></script>
+  </head>
+  <body>
+    <main class="admin-login-wrap">
+      <a class="admin-back-link" href="../index.html">← Back to the church website</a>
+      <section class="admin-login-card" aria-labelledby="login-title">
+        <p class="admin-eyebrow">Church administration</p>
+        <h1 id="login-title">Sign in</h1>
+        <p>Use your administrator email and password to manage church updates.</p>
+        <form id="login-form" class="admin-form" novalidate>
+          <label>Email address
+            <input name="email" type="email" autocomplete="username" maxlength="254" required>
+          </label>
+          <label>Password
+            <input name="password" type="password" autocomplete="current-password" required>
+          </label>
+          <p class="admin-status" id="login-status" role="status" aria-live="polite"></p>
+          <button class="admin-button admin-button-primary" type="submit">Sign in</button>
+          <button class="admin-text-button" id="forgot-password" type="button">Forgot password?</button>
+        </form>
+        <form id="password-reset-form" class="admin-form" novalidate hidden>
+          <label>New password
+            <input name="new_password" type="password" autocomplete="new-password" minlength="8" required>
+          </label>
+          <label>Confirm new password
+            <input name="confirm_password" type="password" autocomplete="new-password" minlength="8" required>
+          </label>
+          <p class="admin-status" id="reset-status" role="status" aria-live="polite"></p>
+          <button class="admin-button admin-button-primary" type="submit">Save new password</button>
+          <button class="admin-text-button" id="back-to-login" type="button">Back to sign in</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Photos from the worship, gatherings, and community life of Christ Ambassadors Fellowship International.">
+    <meta name="theme-color" content="#1D3F91">
+    <meta property="og:title" content="Gallery | Christ Ambassadors Fellowship International">
+    <meta property="og:description" content="See moments from our church community in Sagamu.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="/images/logo.png">
+    <link rel="icon" href="/favicon.png">
+    <title>Gallery | Christ Ambassadors Fellowship International</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script defer src="js/supabase.js"></script>
+    <script defer src="js/components.js"></script>
+    <script defer src="js/phase4.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div id="site-header"></div>
+    <main id="main-content" class="site-main interior-page">
+      <header class="page-intro">
+        <p class="eyebrow">Moments together</p>
+        <h1>Gallery</h1>
+        <p>A collection of moments from worship and fellowship.</p>
+      </header>
+      <section aria-label="Church photo gallery">
+        <label class="album-filter">
+          <span>Filter by album</span>
+          <select id="album-filter">
+            <option value="">All albums</option>
+          </select>
+        </label>
+        <div class="gallery-grid" id="gallery-list" aria-live="polite">
+          <p class="loading-message">Loading gallery…</p>
+        </div>
+        <div class="list-actions">
+          <button class="button button-secondary hidden" id="load-more-gallery" type="button">Load more photos</button>
+        </div>
+      </section>
+    </main>
+    <dialog class="gallery-lightbox" id="gallery-lightbox" aria-label="Gallery image">
+      <div class="lightbox-inner">
+        <button class="lightbox-close" id="gallery-lightbox-close" type="button" aria-label="Close image">×</button>
+        <img id="gallery-lightbox-image" alt="">
+        <p id="gallery-lightbox-caption"></p>
+      </div>
+    </dialog>
+    <div id="site-footer"></div>
+  </body>
+</html>
