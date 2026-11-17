@@ -728,6 +728,7 @@ async function saveEditor(event, section) {
   try {
     const payload = {};
     for (const field of section.fields) {
+      if (section.key === "sermons" && ["likes", "downloads"].includes(field.name)) continue;
       if (field.type === "image" || field.type === "audio") continue;
       const input = form.elements.namedItem(field.name);
       if (field.type === "checkbox") payload[field.name] = input.checked;

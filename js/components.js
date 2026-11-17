@@ -133,6 +133,12 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.7a8.4 8.4 0 0 1-12.4 7.4L3 20.5l1.5-4.9a8.4 8.4 0 1 1 16-3.9Z"></path><path d="M8.2 7.9c.2-.5.4-.5.7-.5h.5c.2 0 .4.1.5.4l.7 1.7c.1.2.1.4 0 .5l-.5.7c-.2.2-.2.4 0 .6.6 1 1.5 1.8 2.6 2.3.2.1.4.1.6-.1l.8-.9c.2-.2.4-.2.6-.1l1.6.8c.2.1.4.2.4.4 0 .3-.2 1.2-.8 1.7-.5.5-1.2.7-2 .5-1.1-.2-2.4-.9-3.7-2-1.6-1.4-2.6-3.1-2.8-4.2-.2-.9.2-1.5.8-1.8Z"></path></svg>
                   <span>WhatsApp</span>
                 </a>
+                <a class="footer-social-link" data-whatsapp-group="main" href="#" aria-label="Join our WhatsApp group" hidden>
+                  <span>Join our WhatsApp group</span>
+                </a>
+                <a class="footer-social-link" data-whatsapp-group="youth" href="#" aria-label="Join the Youth WhatsApp group" hidden>
+                  <span>Join the Youth WhatsApp group</span>
+                </a>
                 <a class="footer-social-link" href="${phoneUrl}" aria-label="Call the church">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3H4.8A1.8 1.8 0 0 0 3 4.8C3 13.7 10.3 21 19.2 21a1.8 1.8 0 0 0 1.8-1.8V17l-5-1.5-1.4 2.1a15.4 15.4 0 0 1-6.2-6.2L10.5 10 9 5H7Z"></path></svg>
                   <span>Call</span>

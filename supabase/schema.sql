@@ -561,3 +561,65 @@ create policy "Admins delete site media"
     public.is_admin()
     and bucket_id in ('sermons-audio', 'thumbnails', 'images')
   );
+
+-- Already applied in Supabase; included here to keep the repository in sync.
+-- Like counter on each sermon
+alter table public.sermons
+  add column if not exists likes integer not null default 0;
+
+-- One row per device per sermon; the public cannot read or write this table directly
+create table if not exists public.sermon_likes (
+  sermon_id uuid not null references public.sermons(id) on delete cascade,
+  device_id uuid not null,
+  created_at timestamptz not null default now(),
+  primary key (sermon_id, device_id)
+);
+
+alter table public.sermon_likes enable row level security;
+revoke all on table public.sermon_likes from anon, authenticated;
+
+-- Like: add this device's like once, recount, return the new total
+create or replace function public.like_sermon(p_sermon_id uuid, p_device_id uuid)
+returns integer
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare new_count integer;
+begin
+  insert into public.sermon_likes (sermon_id, device_id)
+  values (p_sermon_id, p_device_id)
+  on conflict do nothing;
+
+  update public.sermons s
+  set likes = (select count(*) from public.sermon_likes l where l.sermon_id = s.id)
+  where s.id = p_sermon_id
+  returning s.likes into new_count;
+
+  return coalesce(new_count, 0);
+end $$;
+
+-- Unlike: remove this device's like, recount, return the new total
+create or replace function public.unlike_sermon(p_sermon_id uuid, p_device_id uuid)
+returns integer
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare new_count integer;
+begin
+  delete from public.sermon_likes
+  where sermon_id = p_sermon_id and device_id = p_device_id;
+
+  update public.sermons s
+  set likes = (select count(*) from public.sermon_likes l where l.sermon_id = s.id)
+  where s.id = p_sermon_id
+  returning s.likes into new_count;
+
+  return coalesce(new_count, 0);
+end $$;
+
+revoke all on function public.like_sermon(uuid, uuid) from public;
+revoke all on function public.unlike_sermon(uuid, uuid) from public;
+grant execute on function public.like_sermon(uuid, uuid) to anon, authenticated;
+grant execute on function public.unlike_sermon(uuid, uuid) to anon, authenticated;

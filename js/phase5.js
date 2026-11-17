@@ -1,5 +1,6 @@
-// Replace this with the church's WhatsApp group invitation link when ready.
+// Replace these with the WhatsApp group invitation links when ready.
 const PHASE5_WHATSAPP_GROUP_URL = "";
+const PHASE5_YOUTH_WHATSAPP_GROUP_URL = "";
 const FORM_SUBMISSION_COOLDOWN_MS = 60 * 1000;
 const FORM_MINIMUM_TIME_MS = 3000;
 
@@ -7,7 +8,8 @@ const PUBLIC_FORM_CONFIG = {
   prayer: {
     table: "prayer_requests",
     success: "Thank you. Your prayer request has been sent privately.",
-    failure: "We could not send your request right now. Please try again later.",
+    failure:
+      "We could not send your request right now. Please try again later.",
     fields: {
       name: { max: 100 },
       contact: { max: 200 },
@@ -17,7 +19,8 @@ const PUBLIC_FORM_CONFIG = {
   testimony: {
     table: "testimonies",
     success: "Thank you for sharing. Your testimony has been sent for review.",
-    failure: "We could not send your testimony right now. Please try again later.",
+    failure:
+      "We could not send your testimony right now. Please try again later.",
     fields: {
       name: { max: 100 },
       testimony: { max: 2000, required: true },
@@ -26,7 +29,8 @@ const PUBLIC_FORM_CONFIG = {
   "first-timer": {
     table: "first_timers",
     success: "Thank you for introducing yourself. We are glad you visited.",
-    failure: "We could not send your details right now. Please try again later.",
+    failure:
+      "We could not send your details right now. Please try again later.",
     fields: {
       name: { max: 100, required: true },
       phone: { max: 50, required: true },
@@ -37,7 +41,8 @@ const PUBLIC_FORM_CONFIG = {
   contact: {
     table: "contact_messages",
     success: "Thank you. Your message has been sent to the church.",
-    failure: "We could not send your message right now. Please try again later.",
+    failure:
+      "We could not send your message right now. Please try again later.",
     fields: {
       name: { max: 100, required: true },
       contact: { max: 200, required: true },
@@ -47,33 +52,49 @@ const PUBLIC_FORM_CONFIG = {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  configureWhatsAppGroupLink();
+  configureWhatsAppGroupLinks();
   document.querySelectorAll(".connect-form[data-form-kind]").forEach((form) => {
     form.dataset.openedAt = String(Date.now());
     form.addEventListener("submit", handlePublicFormSubmit);
   });
 });
 
-function configureWhatsAppGroupLink() {
-  const link = document.getElementById("whatsapp-group-link");
+function configureWhatsAppGroupLinks() {
+  document.querySelectorAll("[data-whatsapp-group]").forEach((link) => {
+    if (!(link instanceof HTMLAnchorElement)) return;
+    link.hidden = true;
+
+    const groupUrl = safeWhatsAppGroupUrl(
+      link.dataset.whatsappGroup === "main"
+        ? PHASE5_WHATSAPP_GROUP_URL
+        : link.dataset.whatsappGroup === "youth"
+          ? "https://chat.whatsapp.com/Dptf6qKo82J8WN1OMJkecH?s=cl&p=a&mlu=4&ilr=4&iam=2"
+          : "",
+    );
+    if (!groupUrl) return;
+
+    link.href = groupUrl;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.hidden = false;
+  });
+
+  const mainGroupLink = document.querySelector(
+    '[data-whatsapp-group="main"]:not([hidden])',
+  );
   const placeholder = document.getElementById("whatsapp-group-placeholder");
-  if (!link || !placeholder) return;
-
-  const groupUrl = safeWhatsAppGroupUrl(PHASE5_WHATSAPP_GROUP_URL);
-  if (!groupUrl) return;
-
-  link.href = groupUrl;
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  link.hidden = false;
-  placeholder.hidden = true;
+  if (mainGroupLink && placeholder) placeholder.hidden = true;
 }
 
 function safeWhatsAppGroupUrl(value) {
   if (typeof value !== "string" || !value.trim()) return "";
   try {
     const url = new URL(value);
-    return url.protocol === "https:" && url.hostname === "chat.whatsapp.com"
+    return url.protocol === "https:" &&
+      url.hostname === "chat.whatsapp.com" &&
+      url.pathname.length > 1 &&
+      !url.username &&
+      !url.password
       ? url.href
       : "";
   } catch (error) {
@@ -91,7 +112,8 @@ async function handlePublicFormSubmit(event) {
   const config = PUBLIC_FORM_CONFIG[kind];
   const submitButton = form.querySelector('button[type="submit"]');
   const status = form.querySelector(".form-status");
-  if (!config || !(submitButton instanceof HTMLButtonElement) || !status) return;
+  if (!config || !(submitButton instanceof HTMLButtonElement) || !status)
+    return;
 
   clearFormStatus(status);
   const values = readAndValidateForm(form, config);
@@ -108,14 +130,25 @@ async function handlePublicFormSubmit(event) {
   }
 
   const openedAt = Number(form.dataset.openedAt);
-  if (!Number.isFinite(openedAt) || Date.now() - openedAt < FORM_MINIMUM_TIME_MS) {
-    showFormStatus(status, "Please wait a moment before sending your message.", true);
+  if (
+    !Number.isFinite(openedAt) ||
+    Date.now() - openedAt < FORM_MINIMUM_TIME_MS
+  ) {
+    showFormStatus(
+      status,
+      "Please wait a moment before sending your message.",
+      true,
+    );
     return;
   }
 
   const cooldown = readFormCooldown(kind);
   if (cooldown.error) {
-    showFormStatus(status, "Please wait before sending another message from this form.", true);
+    showFormStatus(
+      status,
+      "Please wait before sending another message from this form.",
+      true,
+    );
     return;
   }
   if (cooldown.remaining > 0) {
@@ -128,7 +161,11 @@ async function handlePublicFormSubmit(event) {
   }
 
   if (!window.supabaseClient) {
-    showFormStatus(status, "The connection is temporarily unavailable. Please try again later.", true);
+    showFormStatus(
+      status,
+      "The connection is temporarily unavailable. Please try again later.",
+      true,
+    );
     return;
   }
 
@@ -164,8 +201,16 @@ function readAndValidateForm(form, config) {
   const data = {};
   for (const [name, rules] of Object.entries(config.fields)) {
     const field = form.elements.namedItem(name);
-    if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement)) {
-      return { error: "This form is incomplete. Please refresh the page and try again." };
+    if (
+      !(
+        field instanceof HTMLInputElement ||
+        field instanceof HTMLTextAreaElement
+      )
+    ) {
+      return {
+        error:
+          "This form is incomplete. Please refresh the page and try again.",
+      };
     }
 
     const value = field.value.trim();
@@ -175,7 +220,9 @@ function readAndValidateForm(form, config) {
     }
     if (value.length > rules.max) {
       field.focus();
-      return { error: `Please keep ${field.labels?.[0]?.textContent?.trim() || "this field"} to ${rules.max} characters or fewer.` };
+      return {
+        error: `Please keep ${field.labels?.[0]?.textContent?.trim() || "this field"} to ${rules.max} characters or fewer.`,
+      };
     }
     if (rules.type === "email" && value && !isValidEmail(value)) {
       field.focus();
@@ -200,17 +247,19 @@ function buildFormPayload(kind, data, form) {
 }
 
 function isValidEmail(value) {
-  return value.length <= 254 &&
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  return value.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
 function readFormCooldown(kind) {
   try {
-    const lastSubmittedAt = Number(localStorage.getItem(`public-form-${kind}-submitted`));
+    const lastSubmittedAt = Number(
+      localStorage.getItem(`public-form-${kind}-submitted`),
+    );
     if (!Number.isFinite(lastSubmittedAt) || lastSubmittedAt <= 0) {
       return { remaining: 0, error: false };
     }
-    const remaining = FORM_SUBMISSION_COOLDOWN_MS - (Date.now() - lastSubmittedAt);
+    const remaining =
+      FORM_SUBMISSION_COOLDOWN_MS - (Date.now() - lastSubmittedAt);
     return { remaining: Math.max(0, remaining), error: false };
   } catch (error) {
     console.warn("Could not check the form submission cooldown.", error);

@@ -366,6 +366,11 @@ p {
   text-decoration: none;
 }
 
+.footer-social-link[hidden],
+#media nav a[hidden] {
+  display: none;
+}
+
 .footer-social-link svg,
 .contact-link svg {
   width: 20px;
@@ -623,12 +628,43 @@ p {
 .sermon-card .scripture,
 .sermon-card .preacher,
 .sermon-card .date,
-.sermon-card .downloads,
 .sermon-card .duration {
   margin: 0;
   padding: 0 1rem 0.5rem;
   color: var(--color-muted);
   font-size: 0.95rem;
+}
+
+.sermon-engagement {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1rem 0.5rem;
+}
+
+.sermon-card .downloads {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.sermon-like-button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.45rem 0.7rem;
+}
+
+.sermon-like-button[aria-pressed="true"] {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.sermon-like-feedback {
+  margin: 0;
+  padding: 0 1rem 0.5rem;
+  color: var(--color-muted);
+  font-size: 0.85rem;
 }
 
 .data-status {

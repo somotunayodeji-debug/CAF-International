@@ -1,5 +1,7 @@
 const SERMON_PAGE_SIZE = 12;
 const DEFAULT_THUMBNAIL = "/images/logo.png";
+const SERMON_LIKE_DEVICE_KEY = "caf-sermon-like-device-id";
+const SERMON_LIKED_IDS_KEY = "caf-liked-sermon-ids";
 
 let sermonPage = 0;
 let sermonTotal = 0;
@@ -13,11 +15,14 @@ let durationElement;
 let currentSermon = null;
 let resumePosition = 0;
 let lastPositionSaveAt = 0;
+let sermonLikeDeviceId = "";
+let likedSermonIds = new Set();
 
 document.addEventListener("DOMContentLoaded", () => {
   const sermonGrid = document.getElementById("sermonGrid");
   if (!sermonGrid) return;
 
+  initializeSermonLikeState();
   audio = document.getElementById("audio");
   playPauseButton = document.getElementById("playPauseBtn");
   progressBar = document.getElementById("progressBar");
@@ -116,7 +121,7 @@ function setupAudioPlayer() {
 
   audio.addEventListener("ended", () => {
     updatePlayButton(false);
-    localStorage.removeItem("lastPlayed");
+    removeSavedListening();
     resumePosition = 0;
     setContinueListeningVisible(false);
   });
@@ -129,7 +134,7 @@ function setupAudioPlayer() {
     currentSermon = null;
     resumePosition = 0;
     document.getElementById("audioPlayer")?.classList.remove("active");
-    localStorage.removeItem("lastPlayed");
+    removeSavedListening();
     setContinueListeningVisible(false);
   });
 
@@ -203,7 +208,7 @@ async function loadSermons({ append = false } = {}) {
   let query = window.supabaseClient
     .from("sermons")
     .select(
-      "id, title, preacher, sermon_date, audio_url, thumbnail_url, duration_seconds, series, scripture_ref, notes, downloads",
+      "id, title, preacher, sermon_date, audio_url, thumbnail_url, duration_seconds, series, scripture_ref, notes, downloads, likes",
       { count: "exact" },
     )
     .order("sermon_date", { ascending: false })
@@ -305,10 +310,21 @@ function renderSermonCards(sermons, grid) {
       card.append(scripture);
     }
 
+    const engagement = document.createElement("div");
+    engagement.className = "sermon-engagement";
     const downloads = document.createElement("p");
     downloads.className = "downloads";
     downloads.textContent = `Downloads: ${Number(sermon.downloads) || 0}`;
-    card.append(downloads);
+    const likeButton = createSermonLikeButton(sermon);
+    engagement.append(downloads, likeButton);
+    card.append(engagement);
+
+    const likeFeedback = document.createElement("p");
+    likeFeedback.className = "sermon-like-feedback";
+    likeFeedback.setAttribute("role", "status");
+    likeFeedback.setAttribute("aria-live", "polite");
+    likeFeedback.hidden = true;
+    card.append(likeFeedback);
 
     if (sermon.duration_seconds) {
       const duration = document.createElement("p");
@@ -331,6 +347,115 @@ function renderSermonCards(sermons, grid) {
     card.append(buttons);
     grid.append(card);
   });
+}
+
+function initializeSermonLikeState() {
+  try {
+    const storedDeviceId = localStorage.getItem(SERMON_LIKE_DEVICE_KEY);
+    sermonLikeDeviceId =
+      storedDeviceId && isUuid(storedDeviceId) ? storedDeviceId : crypto.randomUUID();
+    if (storedDeviceId !== sermonLikeDeviceId) {
+      localStorage.setItem(SERMON_LIKE_DEVICE_KEY, sermonLikeDeviceId);
+    }
+
+    const storedLikedIds = localStorage.getItem(SERMON_LIKED_IDS_KEY);
+    const parsedLikedIds = storedLikedIds ? JSON.parse(storedLikedIds) : [];
+    if (Array.isArray(parsedLikedIds)) {
+      likedSermonIds = new Set(
+        parsedLikedIds.filter((sermonId) => typeof sermonId === "string"),
+      );
+    }
+  } catch (error) {
+    console.warn("Sermon like preferences could not be loaded from storage.", error);
+    if (!sermonLikeDeviceId) {
+      try {
+        sermonLikeDeviceId = crypto.randomUUID();
+      } catch (deviceError) {
+        console.warn("A device ID could not be created for sermon likes.", deviceError);
+      }
+    }
+  }
+}
+
+function isUuid(value) {
+  return /^[\da-f]{8}-(?:[\da-f]{4}-){3}[\da-f]{12}$/i.test(value);
+}
+
+function createSermonLikeButton(sermon) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "button button-secondary sermon-like-button";
+  button.dataset.sermonLike = "";
+  const likes = Math.max(0, Number(sermon.likes) || 0);
+  button.addEventListener("click", () => toggleSermonLike(sermon, button));
+  updateSermonLikeButton(button, likedSermonIds.has(sermon.id), likes);
+  if (!sermonLikeDeviceId) button.disabled = true;
+  return button;
+}
+
+function updateSermonLikeButton(button, isLiked, count) {
+  button.textContent = `♥ ${count}`;
+  button.setAttribute("aria-pressed", String(isLiked));
+  button.setAttribute(
+    "aria-label",
+    `${isLiked ? "Unlike" : "Like"} this sermon. ${count} ${count === 1 ? "like" : "likes"}.`,
+  );
+}
+
+function saveLikedSermonIds() {
+  try {
+    localStorage.setItem(SERMON_LIKED_IDS_KEY, JSON.stringify([...likedSermonIds]));
+  } catch (error) {
+    console.warn("Sermon like preferences could not be saved to storage.", error);
+  }
+}
+
+async function toggleSermonLike(sermon, button) {
+  if (button.disabled || !sermonLikeDeviceId) return;
+  const previousLikedState = likedSermonIds.has(sermon.id);
+  const previousCount = Math.max(0, Number(sermon.likes) || 0);
+  const nextLikedState = !previousLikedState;
+  const optimisticCount = Math.max(0, previousCount + (nextLikedState ? 1 : -1));
+  const feedback = button.closest(".sermon-card")?.querySelector(".sermon-like-feedback");
+
+  if (nextLikedState) likedSermonIds.add(sermon.id);
+  else likedSermonIds.delete(sermon.id);
+  saveLikedSermonIds();
+  sermon.likes = optimisticCount;
+  updateSermonLikeButton(button, nextLikedState, optimisticCount);
+  if (feedback) {
+    feedback.textContent = "";
+    feedback.hidden = true;
+  }
+  button.disabled = true;
+
+  try {
+    const { data, error } = await window.supabaseClient.rpc(
+      nextLikedState ? "like_sermon" : "unlike_sermon",
+      { p_sermon_id: sermon.id, p_device_id: sermonLikeDeviceId },
+    );
+    if (error) throw error;
+
+    const serverCount = data;
+    if (typeof serverCount !== "number" || !Number.isInteger(serverCount) || serverCount < 0) {
+      throw new Error("The like count response was invalid.");
+    }
+    sermon.likes = serverCount;
+    updateSermonLikeButton(button, nextLikedState, serverCount);
+  } catch (error) {
+    console.error("Could not update sermon like:", error);
+    if (previousLikedState) likedSermonIds.add(sermon.id);
+    else likedSermonIds.delete(sermon.id);
+    saveLikedSermonIds();
+    sermon.likes = previousCount;
+    updateSermonLikeButton(button, previousLikedState, previousCount);
+    if (feedback) {
+      feedback.textContent = "Could not update your like. Please try again.";
+      feedback.hidden = false;
+    }
+  } finally {
+    button.disabled = false;
+  }
 }
 
 function createSermonAction(label, action, className) {
@@ -364,7 +489,7 @@ function playSermon(sermon, { resumeAt = 0, autoplay = true } = {}) {
   }
 
   audio.pause();
-  localStorage.removeItem("lastPlayed");
+  removeSavedListening();
   lastPositionSaveAt = 0;
   currentSermon = sermon;
   resumePosition = Math.max(0, Number(resumeAt) || 0);
@@ -416,7 +541,7 @@ async function loadSharedSermon(sermonId) {
   const { data, error } = await window.supabaseClient
     .from("sermons")
     .select(
-      "id, title, preacher, sermon_date, audio_url, thumbnail_url, duration_seconds, series, scripture_ref, notes, downloads",
+      "id, title, preacher, sermon_date, audio_url, thumbnail_url, duration_seconds, series, scripture_ref, notes, downloads, likes",
     )
     .eq("id", sermonId)
     .maybeSingle();
@@ -437,7 +562,7 @@ function restoreSavedListening() {
 
   const src = safeMediaUrl(saved.src);
   if (!src) {
-    localStorage.removeItem("lastPlayed");
+    removeSavedListening();
     return;
   }
 
@@ -462,14 +587,22 @@ function restoreSavedListening() {
 }
 
 function readSavedListening() {
-  const savedValue = localStorage.getItem("lastPlayed");
-  if (!savedValue) return null;
   try {
+    const savedValue = localStorage.getItem("lastPlayed");
+    if (!savedValue) return null;
     return JSON.parse(savedValue);
   } catch (error) {
     console.warn("Saved listening position was invalid and has been cleared.", error);
-    localStorage.removeItem("lastPlayed");
+    removeSavedListening();
     return null;
+  }
+}
+
+function removeSavedListening() {
+  try {
+    localStorage.removeItem("lastPlayed");
+  } catch (error) {
+    console.warn("The saved listening position could not be removed.", error);
   }
 }
 
@@ -480,17 +613,21 @@ function saveCurrentListeningPosition(force = false) {
   if (!force && now - lastPositionSaveAt < 5000) return;
 
   const thumbnail = document.getElementById("playerThumb");
-  localStorage.setItem(
-    "lastPlayed",
-    JSON.stringify({
-      id: currentSermon.id,
-      src: audio.currentSrc || audio.src,
-      time: audio.currentTime,
-      title: currentSermon.title,
-      preacher: currentSermon.preacher || "",
-      thumb: thumbnail?.src || "",
-    }),
-  );
+  try {
+    localStorage.setItem(
+      "lastPlayed",
+      JSON.stringify({
+        id: currentSermon.id,
+        src: audio.currentSrc || audio.src,
+        time: audio.currentTime,
+        title: currentSermon.title,
+        preacher: currentSermon.preacher || "",
+        thumb: thumbnail?.src || "",
+      }),
+    );
+  } catch (error) {
+    console.warn("The listening position could not be saved.", error);
+  }
   lastPositionSaveAt = now;
   setContinueListeningVisible(audio.paused);
 }

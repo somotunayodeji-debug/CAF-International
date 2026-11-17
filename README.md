@@ -33,9 +33,9 @@ This site is a static church website for sharing sermons, events, blog posts, ga
 4. Keep the default build settings for a static site (no build command needed).
 5. Deploy and ensure the domain has the public pages and `manifest.json`, `sw.js`, and `offline.html` accessible at the root.
 
-## Update the WhatsApp link and service times
+## Update the WhatsApp links and service times
 
-- WhatsApp link: update the value in `js/phase5.js` in `PHASE5_WHATSAPP_GROUP_URL`.
+- WhatsApp group links: update `PHASE5_WHATSAPP_GROUP_URL` and `PHASE5_YOUTH_WHATSAPP_GROUP_URL` in `js/phase5.js`.
 - Service times: update the site-wide service schedule in `js/components.js` footer text and on the homepage in `index.html`.
 
 ## PWA / App icons
@@ -53,7 +53,7 @@ The manifest and touch icons already point to those filenames.
 Before going live, finish the remaining manual tasks:
 
 - Add the final icon files in `images/icons/`
-- Confirm the WhatsApp link in `js/phase5.js`
+- Confirm both WhatsApp group links in `js/phase5.js`
 - Confirm weekly service times and service days
 - Set the Supabase auth redirect URLs in the Supabase dashboard
 - Create the admin account(s) and assign the correct permissions

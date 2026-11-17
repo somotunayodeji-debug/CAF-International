@@ -1,4 +1,4 @@
-const CACHE_NAME = 'caf-v1';
+const CACHE_NAME = 'caf-v3';
 const CORE_ASSETS = [
   '/',
   '/index.html',
